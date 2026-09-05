@@ -11,6 +11,9 @@ version = "0.1.0"
 description = "A low-level C++ image-processing library for Python"
 readme = "README.md"
 requires-python = ">=3.10"
+dependencies = [
+    "numpy>=1.26",
+]
 
 [tool.scikit-build]
 wheel.packages = ["python/lumen"]

@@ -60,6 +60,7 @@ if(LUMEN_BUILD_PYTHON)
     pybind11_add_module(
         _lumen_native
         python/bindings/module.cpp
+        python/bindings/bind_point.cpp
     )
 
     target_link_libraries(

@@ -2,6 +2,8 @@
 
 #include "lumen/version.hpp"
 
+#include "bindings.hpp"
+
 namespace py = pybind11;
 
 PYBIND11_MODULE(_lumen_native, module) {
@@ -12,4 +14,6 @@ PYBIND11_MODULE(_lumen_native, module) {
         &lumen::version_major,
         "Return LumenEngine's major version"
     );
+
+    lumen::python::bind_point(module);
 }
