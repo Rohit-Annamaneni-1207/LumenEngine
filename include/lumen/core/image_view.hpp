@@ -1,6 +1,5 @@
 #pragma once
 
-#include <iostream>
 #include <cstddef>
 #include <stdexcept>
 
@@ -22,7 +21,7 @@ namespace lumen {
         width_(width),
         height_(height),
         channels_(channels),
-        row_stride_(row_stride)
+        row_stride_(row_stride) {
 
         if (data_ == nullptr){
             throw std::invalid_argument("Image data cannot be null");
@@ -39,6 +38,7 @@ namespace lumen {
                 "row stride is too small for the image width"
             );
         }
+    }
 
 
         [[nodiscard]] std::size_t width() const noexcept {
@@ -57,17 +57,18 @@ namespace lumen {
             return row_stride_;
         }
 
+        // Memory address for pixel given
         T& at(
             std::size_t x,
             std::size_t y,
             std::size_t channel = 0
         ) const {
-            if (x >= width_ || y >= height_ || channels >= channels_)
+            if (x >= width_ || y >= height_ || channel >= channels_)
             {
                 throw std::out_of_range("Out of range coordinates");
             }
 
-            return data_[y*row_stride_ + x*channels + channel];
+            return data_[y*row_stride_ + x*channels_ + channel];
         }
 
     private:

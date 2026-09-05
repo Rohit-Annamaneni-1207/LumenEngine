@@ -10,6 +10,7 @@ add_library(
     lumen_core
     STATIC
     src/core/version.cpp
+    src/ops/point.cpp
 )
 
 target_include_directories(
@@ -91,4 +92,20 @@ if(BUILD_TESTING)
         NAME lumen.version
         COMMAND lumen_core_tests
     )
+
+    add_executable(
+        lumen_point_tests
+        tests/cpp/test_invert.cpp
+    )
+
+    target_link_libraries(
+        lumen_point_tests
+        PRIVATE
+            lumen_core
+    )
+
+    add_test(
+        NAME lumen.point
+        COMMAND lumen_point_tests
+    )    
 endif()
