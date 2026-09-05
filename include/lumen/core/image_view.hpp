@@ -57,6 +57,19 @@ namespace lumen {
             return row_stride_;
         }
 
+        T& at(
+            std::size_t x,
+            std::size_t y,
+            std::size_t channel = 0
+        ) const {
+            if (x >= width_ || y >= height_ || channels >= channels_)
+            {
+                throw std::out_of_range("Out of range coordinates");
+            }
+
+            return data_[y*row_stride_ + x*channels + channel];
+        }
+
     private:
         T* data_;
         std::size_t width_;
