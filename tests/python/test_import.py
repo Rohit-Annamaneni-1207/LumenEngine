@@ -75,3 +75,64 @@ def test_invert_rejects_wrong_dtype():
 
     with pytest.raises(TypeError):
         lumen.invert(source)
+
+
+@pytest.mark.parametrize(
+    ("delta", "expected"),
+    [
+        (20, np.array([[20, 120, 255]], dtype=np.uint8)),
+        (-20, np.array([[0, 80, 230]], dtype=np.uint8)),
+    ],
+)
+def test_adjust_brightness_grayscale(delta, expected):
+    source = np.array([[0, 100, 250]], dtype=np.uint8)
+    original = source.copy()
+
+    result = lumen.adjust_brightness(source, delta)
+
+    np.testing.assert_array_equal(result, expected)
+    np.testing.assert_array_equal(source, original)
+
+    assert result.dtype == np.uint8
+    assert result.shape == source.shape
+    assert result.flags.c_contiguous
+
+
+def test_adjust_brightness_rgb():
+    source = np.array(
+        [
+            [
+                [0, 100, 250],
+                [10, 200, 255],
+            ]
+        ],
+        dtype=np.uint8,
+    )
+
+    expected = np.array(
+        [
+            [
+                [10, 110, 255],
+                [20, 210, 255],
+            ]
+        ],
+        dtype=np.uint8,
+    )
+
+    result = lumen.adjust_brightness(source, 10)
+
+    np.testing.assert_array_equal(result, expected)
+
+
+def test_adjust_brightness_rejects_unsupported_channels():
+    source = np.zeros((2, 3, 4), dtype=np.uint8)
+
+    with pytest.raises(ValueError, match="grayscale or RGB"):
+        lumen.adjust_brightness(source, 20)
+
+
+def test_adjust_brightness_rejects_wrong_dtype():
+    source = np.zeros((2, 3), dtype=np.float32)
+
+    with pytest.raises(TypeError):
+        lumen.adjust_brightness(source, 20)
