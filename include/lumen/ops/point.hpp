@@ -14,4 +14,11 @@ namespace lumen {
         ImageView<std::uint8_t> dest,
         int delta
     );
+
+    void binary_threshold(
+        ImageView<const std::uint8_t> source,
+        ImageView<std::uint8_t> dest,
+        std::uint8_t threshold,
+        std::uint8_t max_val = 255
+    );
 }

@@ -136,3 +136,41 @@ def test_adjust_brightness_rejects_wrong_dtype():
 
     with pytest.raises(TypeError):
         lumen.adjust_brightness(source, 20)
+
+
+def test_binary_threshold():
+    source = np.array([[0, 127, 128, 129, 255]], dtype=np.uint8)
+    original = source.copy()
+
+    result = lumen.binary_threshold(source, 128)
+
+    expected = np.array([[0, 0, 0, 255, 255]], dtype=np.uint8)
+    np.testing.assert_array_equal(result, expected)
+    np.testing.assert_array_equal(source, original)
+
+    assert result.dtype == np.uint8
+    assert result.shape == source.shape
+    assert result.flags.c_contiguous
+
+
+def test_binary_threshold_custom_max_value():
+    source = np.array([[0, 128, 129, 255]], dtype=np.uint8)
+
+    result = lumen.binary_threshold(source, 128, max_value=1)
+
+    expected = np.array([[0, 0, 1, 1]], dtype=np.uint8)
+    np.testing.assert_array_equal(result, expected)
+
+
+def test_binary_threshold_rejects_rgb():
+    source = np.zeros((2, 3, 3), dtype=np.uint8)
+
+    with pytest.raises(ValueError, match="grayscale image"):
+        lumen.binary_threshold(source, 128)
+
+
+def test_binary_threshold_rejects_wrong_dtype():
+    source = np.zeros((2, 3), dtype=np.float32)
+
+    with pytest.raises(TypeError):
+        lumen.binary_threshold(source, 128)

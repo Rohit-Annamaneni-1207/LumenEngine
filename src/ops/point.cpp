@@ -52,4 +52,36 @@ namespace lumen {
             }
         }
     }
-}
+
+    void binary_threshold(
+        ImageView<const std::uint8_t> source,
+        ImageView<std::uint8_t> dest,
+        std::uint8_t threshold,
+        std::uint8_t max_val
+    ) {
+
+        if (
+            source.width() != dest.width() ||
+            source.height() != dest.height() ||
+            source.channels() != dest.channels()
+        )
+        {
+            throw std::invalid_argument("Source and destination dimensions do not match");
+        }
+
+        if (source.channels() != 1)
+        {
+            throw std::invalid_argument("Binary thresholding is invalid on images with channels != 1");
+        }
+
+        for (std::size_t y = 0; y < source.height(); y++) {
+            for (std::size_t x = 0; x < source.width(); x++) {
+                for (std::size_t c = 0; c < source.channels(); c++) {
+                    dest.at(x, y, c) = static_cast<std::uint8_t>(source.at(x, y, c) > threshold ? max_val : 0);
+                }
+            }
+        }
+    }
+
+
+} //lumen namespace
