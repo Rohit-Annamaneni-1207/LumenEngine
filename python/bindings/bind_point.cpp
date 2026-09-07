@@ -68,7 +68,56 @@ namespace lumen::python {
 
             return destination;
         }
-    }
+
+        py::array_t<std::uint8_t> adjust_brightness(
+            py::array_t<std::uint8_t, py::array::c_style> source,
+            int delta
+        ) {
+            const py::buffer_info source_info = source.request();
+
+            if (source_info.ndim != 2 && source_info.ndim != 3) {
+                throw std::invalid_argument(
+                    "image must have shape (height, width) or "
+                    "(height, width, channels)"
+                );
+            }
+
+            const std::size_t height = static_cast<std::size_t>(source_info.shape[0]);
+            const std::size_t width = static_cast<std::size_t>(source_info.shape[1]);
+            const std::size_t channels = static_cast<std::size_t>(source_info.ndim == 2 ? 1 : source_info.shape[2]);
+
+            if (channels != 1 && channels != 3)
+            {
+                throw std::invalid_argument("Only grayscale or RGB images are supported");
+            }
+
+            py::array_t<std::uint8_t> dest(source_info.shape);
+            const py::buffer_info dest_info = dest.request();
+
+            const ImageView<const std::uint8_t> source_view(
+                static_cast<const std::uint8_t*>(source_info.ptr),
+                width,
+                height,
+                channels,
+                static_cast<std::size_t>(source_info.strides[0])
+            );
+
+            ImageView<std::uint8_t> dest_view(
+                static_cast<std::uint8_t*>(dest_info.ptr),
+                width,
+                height,
+                channels,
+                static_cast<std::size_t>(dest_info.strides[0])
+            );
+
+            {
+                py::gil_scoped_release release;
+                lumen::adjust_brightness(source_view, dest_view, delta);
+            }
+
+            return dest;
+        }
+    } // Bindings
 
     void bind_point(py::module_& module) {
         module.def(
@@ -77,5 +126,15 @@ namespace lumen::python {
             py::arg("image"),
             "Invert an 8-bit grayscale or RGB image"
         );
-    }
-}
+
+        module.def(
+            "adjust_brightness",
+            &adjust_brightness,
+            py::arg("image"),
+            py::arg("delta"),
+            "Adjust image using a signed offset (delta)"
+        );
+    } // Module defs
+
+
+} //Lumen namespace

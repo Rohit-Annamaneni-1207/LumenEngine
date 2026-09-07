@@ -8,4 +8,10 @@ namespace lumen {
         ImageView<const std::uint8_t> source,
         ImageView<std::uint8_t> dest
     );
+
+    void adjust_brightness(
+        ImageView<const std::uint8_t> source,
+        ImageView<std::uint8_t> dest,
+        int delta
+    );
 }
