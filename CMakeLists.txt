@@ -11,6 +11,7 @@ add_library(
     STATIC
     src/core/version.cpp
     src/ops/point.cpp
+    src/ops/color.cpp
 )
 
 target_include_directories(
@@ -108,5 +109,21 @@ if(BUILD_TESTING)
     add_test(
         NAME lumen.point
         COMMAND lumen_point_tests
-    )    
+    )
+
+    add_executable(
+        lumen_color_tests
+        tests/cpp/test_color.cpp
+    )
+
+    target_link_libraries(
+        lumen_color_tests
+        PRIVATE
+            lumen_core
+    )
+
+    add_test(
+        NAME lumen.color
+        COMMAND lumen_color_tests
+    )
 endif()
